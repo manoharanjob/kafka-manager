@@ -9,15 +9,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.admin.AdminClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.util.ResourceUtils;
 
 import io.confluent.kafka.schemaregistry.SchemaProvider;
@@ -29,39 +29,55 @@ import io.confluent.kafka.schemaregistry.json.JsonSchemaProvider;
 import io.confluent.kafka.schemaregistry.protobuf.ProtobufSchemaProvider;
 
 @Configuration
-@PropertySource("classpath:${kafka.file.path}")
-@ConfigurationProperties(prefix = "schema.registry")
 public class KafkaConfiguration {
+
+	private final Logger log = LoggerFactory.getLogger(KafkaConfiguration.class);
 
 	@Value("${kafka.file.path}")
 	private String kafkaFilePath;
 
-	@Value("${schema.registry.url}")
-	private String schemaRegistryUrl;
-
 	@Autowired
-	private Environment env;
-
-	private Map<String, String> ssl;
+	private Properties kafkaProperties;
 
 	@Bean
-	public AdminClient adminClient() throws FileNotFoundException {
-		Properties props = new Properties();
-		File file = ResourceUtils.getFile("classpath:" + kafkaFilePath);
-		try (InputStream inStream = new FileInputStream(file)) {
-			props.load(inStream);
+	public Properties kafkaProperties() {
+		Properties properties = new Properties();
+		InputStream inStream = null;
+		try {
+			File file = ResourceUtils.getFile("classpath:" + kafkaFilePath);
+			inStream = new FileInputStream(file);
+			properties.load(inStream);
+		} catch (FileNotFoundException e) {
+			log.error("Kafka config file not found - {}", kafkaFilePath);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Kafka config file read exception - {}", e.getMessage());
+		} finally {
+			if (inStream != null) {
+				try {
+					inStream.close();
+				} catch (IOException e) {
+					log.error("Kafka config file stream close exception - {}", e.getMessage());
+				}
+			}
 		}
-		return AdminClient.create(props);
+		return properties;
+	}
+
+	@Bean
+	public AdminClient adminClient() {
+		return AdminClient.create(kafkaProperties);
 	}
 
 	@Bean
 	public SchemaRegistryClient schemaRegistryClient() {
-		RestService restService = new RestService(schemaRegistryUrl);
+		Map map = kafkaProperties.entrySet()
+				.stream()
+				.filter(entry -> entry.getKey().toString().contains("schema") && !entry.getKey().toString().contains("url"))
+				.collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+		RestService restService = new RestService(kafkaProperties.getProperty("schema.registry.url"));
 		List<SchemaProvider> providers = Arrays.asList(new AvroSchemaProvider(), new JsonSchemaProvider(),
 				new ProtobufSchemaProvider());
-		SchemaRegistryClient schemaRegistryClient = new CachedSchemaRegistryClient(restService, 10, providers, ssl,
+		SchemaRegistryClient schemaRegistryClient = new CachedSchemaRegistryClient(restService, 10, providers, map,
 				null);
 		return schemaRegistryClient;
 	}
