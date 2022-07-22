@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.marriott.eeh.dto.request.SchemaRequestDto;
-import com.marriott.eeh.kafka.SchemaService;
+import com.marriott.eeh.service.SchemaService;
 
 import io.confluent.kafka.schemaregistry.client.SchemaMetadata;
 

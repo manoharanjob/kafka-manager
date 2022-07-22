@@ -1,4 +1,6 @@
-package com.marriott.eeh.dto.request;
+package com.marriott.eeh.exception.model;
+
+import java.util.Collection;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +13,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SchemaRequestDto {
+public class ErrorResponse {
 
-	private String subject;
-	private String schema;
-	private String schemaType;
+	private Collection<ErrorInfo> errors;
 
 }

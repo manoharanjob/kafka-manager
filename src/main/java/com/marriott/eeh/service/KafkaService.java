@@ -1,4 +1,4 @@
-package com.marriott.eeh.kafka;
+package com.marriott.eeh.service;
 
 import java.util.Collection;
 

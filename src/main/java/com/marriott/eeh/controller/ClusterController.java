@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.marriott.eeh.kafka.ClusterService;
+import com.marriott.eeh.service.ClusterService;
 
 @RestController
 public class ClusterController {

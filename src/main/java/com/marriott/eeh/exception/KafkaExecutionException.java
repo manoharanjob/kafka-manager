@@ -6,10 +6,12 @@ import lombok.Getter;
 public class KafkaExecutionException extends RuntimeException {
 
 	private String code;
+	private String additionalInfo;
 
 	public KafkaExecutionException(String code, String message) {
 		super(message);
 		this.code = code;
+		this.additionalInfo = message;
 	}
 
 }
