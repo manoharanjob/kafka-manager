@@ -25,9 +25,15 @@ public class ConsumerGroupController {
 	@Autowired
 	private ConsumerGroupService consumerGroupService;
 
-	@GetMapping("/consumer-group")
+	@GetMapping("/consumer-groups")
 	public Collection<ConsumerGroupListing> getConsumerGroups() {
 		return consumerGroupService.getConsumerGroups();
+	}
+
+	@PostMapping("/consumer-groups/details")
+	public Map<String, ConsumerGroupDescription> getConsumerGroupsDetails(
+			@RequestBody Collection<String> consumerGroups) {
+		return consumerGroupService.getConsumerGroupsDetails(consumerGroups);
 	}
 
 	@GetMapping("/consumer-group/{consumerGroup}")
@@ -35,22 +41,13 @@ public class ConsumerGroupController {
 		return consumerGroupService.getConsumerGroupDetails(consumerGroup);
 	}
 
-	@PostMapping("/consumer-group")
-	public Map<String, ConsumerGroupDescription> getConsumerGroupsDetails(
-			@RequestBody Collection<String> consumerGroups) {
-		return consumerGroupService.getConsumerGroupsDetails(consumerGroups);
-
-	}
-
 	@DeleteMapping("/consumer-group/{consumerGroup}")
 	public boolean deleteConsumerGroup(@PathVariable String consumerGroup) {
 		return consumerGroupService.deleteConsumerGroup(consumerGroup);
-
 	}
 
-	@DeleteMapping("/consumer-group")
+	@DeleteMapping("/consumer-groups")
 	public boolean deleteConsumerGroups(@RequestBody Collection<String> consumerGroups) {
 		return consumerGroupService.deleteConsumerGroups(consumerGroups);
-
 	}
 }

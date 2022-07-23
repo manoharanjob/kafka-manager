@@ -1,8 +1,6 @@
 package com.marriott.eeh.service;
 
-import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -11,13 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.marriott.eeh.client.SchemaClient;
 import com.marriott.eeh.dto.request.SchemaRequestDto;
 import com.marriott.eeh.exception.SchemaExecutionException;
 
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.client.SchemaMetadata;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 
 @Service
 public class SchemaService {
@@ -25,11 +22,11 @@ public class SchemaService {
 	private final Logger log = LoggerFactory.getLogger(SchemaService.class);
 
 	@Autowired
-	private SchemaRegistryClient schemaRegistryClient;
+	private SchemaClient schemaClient;
 
 	public Collection<String> getSchemas() {
 		try {
-			return schemaRegistryClient.getAllSubjects();
+			return schemaClient.getSchemas();
 		} catch (Exception e) {
 			throw new SchemaExecutionException("ERR_002", e.getMessage());
 		}
@@ -37,7 +34,7 @@ public class SchemaService {
 
 	public Collection<Integer> getAllVersions(String subject) {
 		try {
-			return schemaRegistryClient.getAllVersions(subject);
+			return schemaClient.getAllVersions(subject);
 		} catch (Exception e) {
 			throw new SchemaExecutionException("ERR_002", e.getMessage());
 		}
@@ -45,7 +42,7 @@ public class SchemaService {
 
 	public SchemaMetadata getLatestSchema(String subject) {
 		try {
-			return schemaRegistryClient.getLatestSchemaMetadata(subject);
+			return schemaClient.getLatestSchema(subject);
 		} catch (Exception e) {
 			throw new SchemaExecutionException("ERR_002", e.getMessage());
 		}
@@ -53,7 +50,7 @@ public class SchemaService {
 
 	public String getCompatibility(String subject) {
 		try {
-			return schemaRegistryClient.getCompatibility(subject);
+			return schemaClient.getCompatibility(subject);
 		} catch (Exception e) {
 			throw new SchemaExecutionException("ERR_002", e.getMessage());
 		}
@@ -62,7 +59,7 @@ public class SchemaService {
 	public int createSchema(SchemaRequestDto schema) {
 		try {
 			final ParsedSchema parsedSchema = parseSchema(schema.getSchema(), schema.getSchemaType());
-			return schemaRegistryClient.register(schema.getSubject(), parsedSchema);
+			return schemaClient.createSchema(schema.getSubject(), parsedSchema);
 		} catch (Exception e) {
 			throw new SchemaExecutionException("ERR_002", e.getMessage());
 		}
@@ -71,24 +68,32 @@ public class SchemaService {
 	public Collection<Integer> createSchemas(Collection<SchemaRequestDto> schemas) {
 		Map<String, ParsedSchema> parsedSchemas = schemas.stream().collect(Collectors.toMap(
 				SchemaRequestDto::getSubject, schema -> parseSchema(schema.getSchema(), schema.getSchemaType())));
-		return parsedSchemas.entrySet().stream().map(entry -> {
-			try {
-				return schemaRegistryClient.register(entry.getKey(), entry.getValue());
-			} catch (IOException | RestClientException e) {
-				return -1;
-			}
-		}).collect(Collectors.toList());
+		return schemaClient.createSchemas(parsedSchemas);
+	}
+
+	public Integer deleteSchema(String subject, String version) {
+		try {
+			return schemaClient.deleteSchema(subject, version);
+		} catch (Exception e) {
+			throw new SchemaExecutionException("ERR_002", e.getMessage());
+		}
+	}
+
+	public Collection<Integer> deleteSchemas(String subject) {
+		try {
+			return schemaClient.deleteSchemas(subject);
+		} catch (Exception e) {
+			throw new SchemaExecutionException("ERR_002", e.getMessage());
+		}
 	}
 
 	public ParsedSchema parseSchema(String schema, String schemaType) {
-		return schemaRegistryClient.parseSchema(schema, schemaType, Collections.emptyList()).orElseThrow(() -> {
-			return new SchemaExecutionException("", "Schema Parsing failed");
-		});
+		return schemaClient.parseSchema(schema, schemaType);
 	}
 
 	public String updateCompatibility(String subject, String compatibility) {
 		try {
-			return schemaRegistryClient.updateCompatibility(subject, compatibility);
+			return schemaClient.updateCompatibility(subject, compatibility);
 		} catch (Exception e) {
 			throw new SchemaExecutionException("ERR_002", e.getMessage());
 		}

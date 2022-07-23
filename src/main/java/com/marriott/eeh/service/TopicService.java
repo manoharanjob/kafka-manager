@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.marriott.eeh.client.KafkaClient;
 import com.marriott.eeh.dto.request.TopicRequestDto;
 import com.marriott.eeh.dto.response.TopicResponseDto;
 import com.marriott.eeh.exception.KafkaExecutionException;
@@ -30,11 +31,11 @@ public class TopicService {
 	private String internalTopicPrefix;
 
 	@Autowired
-	private KafkaService kafkaService;
+	private KafkaClient kafkaClient;
 
 	public Collection<String> getTopics() throws KafkaExecutionException {
 		try {
-			return kafkaService.getTopics().names().get().stream()
+			return kafkaClient.getTopics().names().get().stream()
 					.filter(topic -> !topic.startsWith(internalTopicPrefix)).collect(Collectors.toList());
 		} catch (InterruptedException | ExecutionException e) {
 			log.error("Exception:{}", e.getMessage());
@@ -48,7 +49,7 @@ public class TopicService {
 
 	public Map<String, TopicDescription> getTopicsDetails(Collection<String> topics) throws KafkaExecutionException {
 		try {
-			return kafkaService.getTopicsDetails(topics).allTopicNames().get();
+			return kafkaClient.getTopicsDetails(topics).allTopicNames().get();
 		} catch (InterruptedException | ExecutionException e) {
 			log.error("Exception:{}", e.getMessage());
 			throw new KafkaExecutionException("ERR_001", e.getMessage());
@@ -66,7 +67,7 @@ public class TopicService {
 				Optional.of(topic.getPartition()), Optional.of(topic.getReplicationFactor())))
 				.collect(Collectors.toList());
 
-		CreateTopicsResult createTopicResult = kafkaService.createTopics(list);
+		CreateTopicsResult createTopicResult = kafkaClient.createTopics(list);
 
 		Collection<TopicResponseDto> result = new ArrayList<>(topics.size());
 		topics.forEach(topic -> {
@@ -93,7 +94,7 @@ public class TopicService {
 
 	public boolean deleteTopics(Collection<String> topics) throws KafkaExecutionException {
 		try {
-			kafkaService.deleteTopics(topics).all().get();
+			kafkaClient.deleteTopics(topics).all().get();
 			return true;
 		} catch (InterruptedException | ExecutionException e) {
 			log.error("Exception:{}", e.getMessage());

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.marriott.eeh.client.KafkaClient;
 import com.marriott.eeh.exception.KafkaExecutionException;
 
 @Service
@@ -18,11 +19,11 @@ public class ClusterService {
 	private final Logger log = LoggerFactory.getLogger(ClusterService.class);
 
 	@Autowired
-	private KafkaService kafkaService;
+	private KafkaClient kafkaClient;
 
 	public Map<String, Object> getClusters() throws KafkaExecutionException {
 		try {
-			DescribeClusterResult clusterResult = kafkaService.getClusters();
+			DescribeClusterResult clusterResult = kafkaClient.getClusters();
 			Map<String, Object> map = new HashMap<>();
 			map.put("clusterId", clusterResult.clusterId().get());
 			map.put("controller", clusterResult.controller().get());

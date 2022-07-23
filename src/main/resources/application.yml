@@ -10,3 +10,9 @@ spring:
 kafka:
   topic:
     internalTopicPrefix: _
+
+swagger:
+  title: Kafka Manager
+  description: Kafka admistration
+  version: 1
+  swaggerPackage: com.marriott.eeh

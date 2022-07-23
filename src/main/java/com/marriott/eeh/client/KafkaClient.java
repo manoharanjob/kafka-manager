@@ -1,26 +1,34 @@
-package com.marriott.eeh.service;
+package com.marriott.eeh.client;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.CreateAclsResult;
+import org.apache.kafka.clients.admin.CreatePartitionsResult;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
+import org.apache.kafka.clients.admin.DeleteAclsResult;
 import org.apache.kafka.clients.admin.DeleteConsumerGroupsResult;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
+import org.apache.kafka.clients.admin.DescribeAclsResult;
 import org.apache.kafka.clients.admin.DescribeClusterResult;
 import org.apache.kafka.clients.admin.DescribeConsumerGroupsResult;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.ListConsumerGroupsResult;
 import org.apache.kafka.clients.admin.ListTopicsResult;
+import org.apache.kafka.clients.admin.NewPartitions;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.common.acl.AclBinding;
+import org.apache.kafka.common.acl.AclBindingFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class KafkaService {
+@Component
+public class KafkaClient {
 
-	private final Logger log = LoggerFactory.getLogger(KafkaService.class);
+	private final Logger log = LoggerFactory.getLogger(KafkaClient.class);
 
 	@Autowired
 	private AdminClient adminClient;
@@ -40,6 +48,10 @@ public class KafkaService {
 
 	public CreateTopicsResult createTopics(Collection<NewTopic> topics) {
 		return adminClient.createTopics(topics);
+	}
+
+	public CreatePartitionsResult createPartitions(Map<String, NewPartitions> partitions) {
+		return adminClient.createPartitions(partitions);
 	}
 
 	public DeleteTopicsResult deleteTopics(Collection<String> topics) {
@@ -62,4 +74,19 @@ public class KafkaService {
 		return adminClient.describeCluster();
 	}
 
+	public DescribeAclsResult getAcls() {
+		return adminClient.describeAcls(AclBindingFilter.ANY);
+	}
+
+	public DescribeAclsResult getAcl(AclBindingFilter acl) {
+		return adminClient.describeAcls(acl);
+	}
+
+	public CreateAclsResult createAcls(Collection<AclBinding> acls) {
+		return adminClient.createAcls(acls);
+	}
+
+	public DeleteAclsResult deleteAcls(Collection<AclBindingFilter> acls) {
+		return adminClient.deleteAcls(acls);
+	}
 }

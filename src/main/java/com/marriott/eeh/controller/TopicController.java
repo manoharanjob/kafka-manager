@@ -50,15 +50,15 @@ public class TopicController {
 		return ResponseEntity.status(HttpStatus.OK).body(topicService.getTopics());
 	}
 
-	@GetMapping("/topic/{topicName}")
-	public Map<String, TopicDescription> getTopicDetails(
-			@ApiParam(name = "topicName", type = "String", value = "name of the topic", required = true) @PathVariable String topicName) {
-		return topicService.getTopicDetails(topicName);
-	}
-
-	@PostMapping("/topic")
+	@PostMapping("/topics/details")
 	public Map<String, TopicDescription> getTopicDetails(@RequestBody Collection<String> topics) {
 		return topicService.getTopicsDetails(topics);
+	}
+
+	@GetMapping("/topic/{topicName}")
+	public Map<String, TopicDescription> getTopicDetails(
+			@ApiParam(name = "topicName", type = "String", value = "Topic name", required = true) @PathVariable String topicName) {
+		return topicService.getTopicDetails(topicName);
 	}
 
 	@PostMapping("/topic")
@@ -66,7 +66,7 @@ public class TopicController {
 		return topicService.createTopic(topic);
 	}
 
-	@PostMapping("/topic")
+	@PostMapping("/topics")
 	public Collection<TopicResponseDto> createTopics(@RequestBody Collection<TopicRequestDto> topics) {
 		return topicService.createTopics(topics);
 	}
@@ -76,7 +76,7 @@ public class TopicController {
 		return topicService.deleteTopic(topicName);
 	}
 
-	@DeleteMapping("/topic")
+	@DeleteMapping("/topics")
 	public boolean deleteTopics(@RequestBody Collection<String> topics) {
 		return topicService.deleteTopics(topics);
 	}

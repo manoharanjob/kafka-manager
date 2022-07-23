@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,7 +50,7 @@ public class SchemaController {
 		return schemaService.createSchema(schema);
 	}
 
-	@PostMapping("/schema")
+	@PostMapping("/schemas")
 	public Collection<Integer> createSchema(@RequestBody Collection<SchemaRequestDto> schemas) {
 		return schemaService.createSchemas(schemas);
 	}
@@ -57,6 +58,16 @@ public class SchemaController {
 	@PostMapping("/schema/{subject}/{compatibility}")
 	public String updateCompatibility(@PathVariable String subject, @PathVariable String compatibility) {
 		return schemaService.updateCompatibility(subject, compatibility);
+	}
+
+	@DeleteMapping("/schema/{subject}/{version}")
+	public Integer deleteSchemaByVersion(@PathVariable String subject, @PathVariable String version) {
+		return schemaService.deleteSchema(subject, version);
+	}
+
+	@DeleteMapping("/schema/{subject}")
+	public Collection<Integer> deleteSchema(@PathVariable String subject) {
+		return schemaService.deleteSchemas(subject);
 	}
 
 }

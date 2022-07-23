@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.marriott.eeh.client.KafkaClient;
 import com.marriott.eeh.exception.KafkaExecutionException;
 
 @Service
@@ -20,11 +21,11 @@ public class ConsumerGroupService {
 	private final Logger log = LoggerFactory.getLogger(ConsumerGroupService.class);
 
 	@Autowired
-	private KafkaService kafkaService;
+	private KafkaClient kafkaClient;
 
 	public Collection<ConsumerGroupListing> getConsumerGroups() throws KafkaExecutionException {
 		try {
-			return kafkaService.getConsumerGroups().valid().get();
+			return kafkaClient.getConsumerGroups().valid().get();
 		} catch (InterruptedException | ExecutionException e) {
 			log.error("Exception:{}", e.getMessage());
 			throw new KafkaExecutionException("ERR_001", e.getMessage());
@@ -38,7 +39,7 @@ public class ConsumerGroupService {
 	public Map<String, ConsumerGroupDescription> getConsumerGroupsDetails(Collection<String> groupIds)
 			throws KafkaExecutionException {
 		try {
-			return kafkaService.getConsumerGroupsDetails(groupIds).all().get();
+			return kafkaClient.getConsumerGroupsDetails(groupIds).all().get();
 		} catch (InterruptedException | ExecutionException e) {
 			log.error("Exception:{}", e.getMessage());
 			throw new KafkaExecutionException("ERR_001", e.getMessage());
@@ -51,7 +52,7 @@ public class ConsumerGroupService {
 
 	public boolean deleteConsumerGroups(Collection<String> groupIds) throws KafkaExecutionException {
 		try {
-			kafkaService.deleteConsumerGroups(groupIds).all().get();
+			kafkaClient.deleteConsumerGroups(groupIds).all().get();
 			return true;
 		} catch (InterruptedException | ExecutionException e) {
 			log.error("Exception:{}", e.getMessage());
