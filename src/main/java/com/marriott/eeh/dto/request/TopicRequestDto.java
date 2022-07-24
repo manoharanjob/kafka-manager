@@ -1,5 +1,7 @@
 package com.marriott.eeh.dto.request;
 
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +16,6 @@ public class TopicRequestDto {
 	private String topicName;
 	private Integer partition;
 	private Short replicationFactor;
+	private Map<String, Object> config;
 
 }

@@ -1,7 +1,6 @@
 package com.marriott.eeh.configuration;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,29 +15,23 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 @EnableAutoConfiguration
-@ConfigurationProperties(prefix = "swagger")
 public class SwaggerConfiguration {
 
-	private String title;
-	private String description;
-	private String version;
-	private String swaggerPackage;
-	
 	@Bean
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_2)
 				.apiInfo(apiInfo())
 				.select()
-				.apis(RequestHandlerSelectors.basePackage(swaggerPackage))
+				.apis(RequestHandlerSelectors.basePackage("com.marriott.eeh"))
 				.paths(PathSelectors.any())
 				.build();
 	}
 
 	private ApiInfo apiInfo() {
 		return new ApiInfoBuilder()
-				.title(title)
-				.description(description)
-				.version(version)
+				.title("Kafka Manager")
+				.description("Kafka admistration")
+				.version("1")
 				.build();
 	}
 }

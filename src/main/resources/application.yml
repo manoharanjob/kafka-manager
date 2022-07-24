@@ -6,13 +6,11 @@ server:
 spring:
   profiles:
     active: dev
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 kafka:
   topic:
     internalTopicPrefix: _
 
-swagger:
-  title: Kafka Manager
-  description: Kafka admistration
-  version: 1
-  swaggerPackage: com.marriott.eeh

@@ -97,7 +97,7 @@ public class KafkaConfiguration {
 		return HttpClient.newBuilder().sslContext(sslContext).build();
 	}
 
-	public Properties getBrokerConfig() {
+	public static Properties getBrokerConfig() {
 		Properties brokerProperties = new Properties();
 		kafkaProperties.entrySet()
 				.stream()
@@ -106,14 +106,14 @@ public class KafkaConfiguration {
 		return brokerProperties;
 	}
 	
-	public Map<String, String> getSchemaConfig() {
+	public static Map<String, String> getSchemaConfig() {
 		return kafkaProperties.entrySet()
 				.stream()
 				.filter(entry -> entry.getKey().toString().contains("schema"))
 				.collect(Collectors.toMap(entry -> entry.getKey().toString(), entry -> entry.getValue().toString()));
 	}
 	
-	public Map<String, String> getConnectConfig() {
+	public static Map<String, String> getConnectConfig() {
 		return kafkaProperties.entrySet()
 				.stream()
 				.filter(entry -> entry.getKey().toString().contains("connect"))

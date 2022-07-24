@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marriott.eeh.client.SchemaClient;
 import com.marriott.eeh.dto.request.SchemaRequestDto;
 import com.marriott.eeh.exception.SchemaExecutionException;
@@ -23,6 +24,8 @@ public class SchemaService {
 
 	@Autowired
 	private SchemaClient schemaClient;
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	public Collection<String> getSchemas() {
 		try {
