@@ -2,8 +2,6 @@ package com.marriott.eeh.dto.response;
 
 import java.util.Collection;
 
-import org.apache.kafka.common.Uuid;
-
 import com.marriott.eeh.model.Config;
 import com.marriott.eeh.model.Partition;
 
@@ -20,7 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TopicResponseDto {
 
-	private Uuid topicId;
+	private String topicId;
 	private String topicName;
 	private int partition;
 	private int replicationFactor;

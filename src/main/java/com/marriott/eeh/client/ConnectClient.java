@@ -32,22 +32,25 @@ public class ConnectClient extends AbstractClient {
 	}
 
 	public CompletableFuture<HttpResponse<String>> getConnectors() throws IOException, InterruptedException {
-		return connectHttpClient.sendAsync(getHttpRequest("/connectors"), BodyHandlers.ofString());
+		return connectHttpClient.sendAsync(getHttpRequest(baseUrl + "/connectors"), BodyHandlers.ofString());
 	}
 
 	public CompletableFuture<HttpResponse<String>> getConnector(String connector)
 			throws IOException, InterruptedException {
-		return connectHttpClient.sendAsync(getHttpRequest("/connectors/" + connector), BodyHandlers.ofString());
+		return connectHttpClient.sendAsync(getHttpRequest(baseUrl + "/connectors/" + connector),
+				BodyHandlers.ofString());
 	}
 
 	public CompletableFuture<HttpResponse<String>> createConnector(Map<String, Object> requestBody)
 			throws IOException, InterruptedException {
-		return connectHttpClient.sendAsync(postHttpRequest("/connectors", requestBody), BodyHandlers.ofString());
+		return connectHttpClient.sendAsync(postHttpRequest(baseUrl + "/connectors", requestBody),
+				BodyHandlers.ofString());
 	}
 
 	public CompletableFuture<HttpResponse<String>> deleteConnector(String connector)
 			throws IOException, InterruptedException {
-		return connectHttpClient.sendAsync(deleteHttpRequest("/connectors/" + connector), BodyHandlers.ofString());
+		return connectHttpClient.sendAsync(deleteHttpRequest(baseUrl + "/connectors/" + connector),
+				BodyHandlers.ofString());
 	}
 
 }

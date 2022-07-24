@@ -114,7 +114,7 @@ public class TopicService {
 			TopicResponseDto topicResponse = new TopicResponseDto();
 			topicResponse.setTopicName(topic.getTopicName());
 			try {
-				topicResponse.setTopicId(createTopicResult.topicId(topic.getTopicName()).get());
+				topicResponse.setTopicId(createTopicResult.topicId(topic.getTopicName()).get().toString());
 				topicResponse.setPartition(createTopicResult.numPartitions(topic.getTopicName()).get());
 				topicResponse.setReplicationFactor(createTopicResult.replicationFactor(topic.getTopicName()).get());
 				topicResponse.setConfigs(topicMapper.convertToConfig(createTopicResult.config(topic.getTopicName()).get()));

@@ -26,7 +26,7 @@ public class TopicMapper extends AbstractMapper {
 		Collection<TopicPartitionInfo> partitions = ifNullGetEmpty(topic.partitions());
 		Collection<AclOperation> operations = ifNullGetEmpty(topic.authorizedOperations());
 		return TopicResponseDto.builder()
-				.topicId(topic.topicId())
+				.topicId(topic.topicId().toString())
 				.topicName(topic.name())
 				.partitions(partitions.stream()
 						.map(partition -> convertToPartition(partition))
