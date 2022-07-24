@@ -6,43 +6,45 @@ import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.clients.admin.TopicDescription;
+import org.apache.kafka.common.Node;
 import org.apache.kafka.common.TopicPartitionInfo;
+import org.apache.kafka.common.acl.AclOperation;
 import org.apache.kafka.common.config.ConfigResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.marriott.eeh.dto.response.TopicResponseDto;
-import com.marriott.eeh.dto.response.TopicResponseDto.PartitionInfo;
+import com.marriott.eeh.model.Partition;
 
 @Component
-public class TopicMapper {
+public class TopicMapper extends AbstractMapper {
 
 	private final Logger log = LoggerFactory.getLogger(TopicMapper.class);
 
-	public TopicResponseDto convertFromTopicToTopicResponseDto(Map.Entry<String, TopicDescription> entry) {
+	public TopicResponseDto convertFromTopicToTopicResponseDto(TopicDescription topic) {
+		Collection<TopicPartitionInfo> partitions = ifNullGetEmpty(topic.partitions());
+		Collection<AclOperation> operations = ifNullGetEmpty(topic.authorizedOperations());
 		return TopicResponseDto.builder()
-				.topicId(entry.getValue().topicId())
-				.topicName(entry.getKey())
-				.partitions(entry.getValue()
-						.partitions()
-						.stream()
-						.map(partition -> convertToPartitionInfo(partition))
+				.topicId(topic.topicId())
+				.topicName(topic.name())
+				.partitions(partitions.stream()
+						.map(partition -> convertToPartition(partition))
 						.collect(Collectors.toList()))
-				.operations(entry.getValue()
-						.authorizedOperations()
-						.stream()
+				.operations(operations.stream()
 						.map(operation -> operation.name())
 						.collect(Collectors.toList()))
 				.build();
 	}
 	
-	public PartitionInfo convertToPartitionInfo(TopicPartitionInfo topicPartitionInfo) {
-		return PartitionInfo.builder()
+	public Partition convertToPartition(TopicPartitionInfo topicPartitionInfo) {
+		Collection<Node> replicas = ifNullGetEmpty(topicPartitionInfo.replicas());
+		Collection<Node> isrs = ifNullGetEmpty(topicPartitionInfo.isr());
+		return Partition.builder()
 				.partition(topicPartitionInfo.partition())
-				.leader(topicPartitionInfo.leader().id())
-				.replicas(topicPartitionInfo.replicas().stream().map(replica -> replica.id()).collect(Collectors.toList()))
-				.isr(topicPartitionInfo.isr().stream().map(issr -> issr.id()).collect(Collectors.toList()))
+				.leader(topicPartitionInfo.leader() == null ? null : topicPartitionInfo.leader().id())
+				.replicas(replicas.stream().map(replica -> replica.id()).collect(Collectors.toList()))
+				.isr(isrs.stream().map(isr -> isr.id()).collect(Collectors.toList()))
 				.build();
 	}
 
@@ -53,10 +55,13 @@ public class TopicMapper {
 				.build();
 	}
 	
-	public Collection<TopicResponseDto.Config> convertToConfig(Config config) {
+	public Collection<com.marriott.eeh.model.Config> convertToConfig(Config config) {
+		if(config == null)
+			return null;
+		
 		return config.entries()
 				.stream()
-				.map(cf -> TopicResponseDto.Config.builder()
+				.map(cf -> com.marriott.eeh.model.Config.builder()
 						.name(cf.name())
 						.value(cf.value())
 						.source(cf.source())

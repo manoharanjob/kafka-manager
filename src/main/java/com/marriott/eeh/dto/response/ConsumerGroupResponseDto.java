@@ -2,6 +2,9 @@ package com.marriott.eeh.dto.response;
 
 import java.util.Collection;
 
+import com.marriott.eeh.model.Member;
+import com.marriott.eeh.model.Node;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,35 +26,5 @@ public class ConsumerGroupResponseDto {
 	private String partitionAssignor;
 	private Node coordinator;
 	private Collection<String> operations;
-
-	@Builder
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class Member {
-		private String memberId;
-		private String groupInstanceId;
-		private String clientId;
-		private String host;
-		private Collection<Topic> topics;
-	}
-
-	@Builder
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class Topic {
-		private int partition;
-		private String topic;
-	}
-
-	@Builder
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class Node {
-		private int id;
-		private String idString;
-		private String host;
-		private int port;
-		private String rack;
-	}
 
 }

@@ -84,13 +84,18 @@ public class KafkaConfiguration {
 		try {
 			Map<String, String> connectConfig = getConnectConfig();
 			sslContext = SSLContext.getInstance("TLS");
-			var keyManagers = getKeyManagersFromKeyStore(connectConfig.get("connect.server.ssl.keystore.location"),
-					connectConfig.get("connect.server.ssl.keystore.password"),
-					connectConfig.get("connect.server.ssl.key.password"));
-			var trustManagers = getTrustManagersFromTrustStore(
-					connectConfig.get("connect.server.ssl.truststore.location"),
-					connectConfig.get("connect.server.ssl.truststore.password"));
-			sslContext.init(keyManagers, trustManagers, null);
+			if (connectConfig.containsKey("connect.server.ssl.truststore.location")) {
+				var keyManagers = getKeyManagersFromKeyStore(connectConfig.get("connect.server.ssl.keystore.location"),
+						connectConfig.get("connect.server.ssl.keystore.password"),
+						connectConfig.get("connect.server.ssl.key.password"));
+				var trustManagers = getTrustManagersFromTrustStore(
+						connectConfig.get("connect.server.ssl.truststore.location"),
+						connectConfig.get("connect.server.ssl.truststore.password"));
+				sslContext.init(keyManagers, trustManagers, null);
+			} else {
+				TrustManager[] trustAllCerts = new TrustManager[] {};
+				sslContext.init(null, trustAllCerts, null);
+			}
 		} catch (Exception e) {
 			log.error("Connect Http Client creation exception:{}", e.getMessage());
 		}

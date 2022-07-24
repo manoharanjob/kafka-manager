@@ -44,8 +44,12 @@ public class TopicService {
 
 	public Collection<String> getTopics() throws KafkaExecutionException {
 		try {
-			return kafkaClient.getTopics().names().get().stream()
-					.filter(topic -> !topic.startsWith(internalTopicPrefix)).collect(Collectors.toList());
+			return kafkaClient.getTopics()
+					.names()
+					.get()
+					.stream()
+					.filter(topic -> !topic.startsWith(internalTopicPrefix))
+					.collect(Collectors.toList());
 		} catch (InterruptedException | ExecutionException e) {
 			log.error("Exception:{}", e.getMessage());
 			throw new KafkaExecutionException("ERR_001", e.getMessage());
@@ -61,9 +65,9 @@ public class TopicService {
 			return kafkaClient.getTopicsDetails(topics)
 					.allTopicNames()
 					.get()
-					.entrySet()
+					.values()
 					.stream()
-					.map(entry -> topicMapper.convertFromTopicToTopicResponseDto(entry))
+					.map(topic -> topicMapper.convertFromTopicToTopicResponseDto(topic))
 					.collect(Collectors.toList());
 		} catch (InterruptedException | ExecutionException e) {
 			log.error("Exception:{}", e.getMessage());
@@ -139,9 +143,10 @@ public class TopicService {
 													.entrySet()
 													.stream()
 													.collect(Collectors.toMap(entry -> entry.getKey().name(), entry -> entry.getValue()));
+			
 			Map<ConfigResource, Collection<AlterConfigOp>> configs = topics.stream()
-				.collect(Collectors.toMap(topic -> new ConfigResource(Type.TOPIC, topic.getTopicName()),
-						topic -> filterNewOrUpdateConfig(topic.getConfig(), currentConfigs.get(topic.getTopicName()))));
+						.collect(Collectors.toMap(topic -> new ConfigResource(Type.TOPIC, topic.getTopicName()),
+								topic -> filterNewOrUpdateConfig(topic.getConfig(), currentConfigs.get(topic.getTopicName()))));
 		
 		
 			kafkaClient.updateTopicsConfig(configs).all().get();

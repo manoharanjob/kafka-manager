@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import com.marriott.eeh.dto.response.AclResponseDto;
 
 @Component
-public class AclMapper {
+public class AclMapper extends AbstractMapper {
 
 	private final Logger log = LoggerFactory.getLogger(AclMapper.class);
 

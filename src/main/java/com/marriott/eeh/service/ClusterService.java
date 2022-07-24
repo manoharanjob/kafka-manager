@@ -1,7 +1,6 @@
 package com.marriott.eeh.service;
 
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.admin.DescribeClusterResult;
 import org.slf4j.Logger;
@@ -31,11 +30,7 @@ public class ClusterService {
 					.clusterId(clusterResult.clusterId().get())
 					.controller(clusterMapper.convertToNode(clusterResult.controller().get()))
 					.brokers(clusterMapper.convertToNodes(clusterResult.nodes().get()))
-					.operations(clusterResult.authorizedOperations()
-							.get()
-							.stream()
-							.map(operation -> operation.name())
-							.collect(Collectors.toList()))
+					.operations(clusterMapper.convertToCollectionString(clusterResult.authorizedOperations().get()))
 					.build();
 		} catch (InterruptedException | ExecutionException e) {
 			log.error("Exception:{}", e.getMessage());
