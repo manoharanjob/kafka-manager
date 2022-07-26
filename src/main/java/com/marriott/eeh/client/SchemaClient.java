@@ -65,7 +65,7 @@ public class SchemaClient {
 	}
 
 	public ParsedSchema parseSchema(String schema, String schemaType) {
-		return schemaRegistryClient.parseSchema(schema, schemaType, Collections.emptyList()).orElseThrow(() -> {
+		return schemaRegistryClient.parseSchema(schemaType, schema, Collections.emptyList()).orElseThrow(() -> {
 			return new SchemaExecutionException("", "Schema Parsing failed");
 		});
 	}

@@ -14,10 +14,6 @@ public class ClusterMapper extends AbstractMapper {
 
 	private final Logger log = LoggerFactory.getLogger(ClusterMapper.class);
 
-	public com.marriott.eeh.model.Node convertToNode(Node node) {
-		return convertToNode(node);
-	}
-	
 	public Collection<com.marriott.eeh.model.Node> convertToNodes(Collection<Node> nodes) {
 		if(nodes == null)
 			return null;

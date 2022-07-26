@@ -2,6 +2,7 @@ package com.marriott.eeh.dto.response;
 
 import java.util.Collection;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.marriott.eeh.model.Config;
 import com.marriott.eeh.model.Partition;
 
@@ -16,16 +17,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TopicResponseDto {
 
 	private String topicId;
 	private String topicName;
-	private int partition;
-	private int replicationFactor;
+	private Integer partition;
+	private Integer replicationFactor;
 	private Collection<Partition> partitions;
 	private Collection<String> operations;
 	private Collection<Config> configs;
-	private boolean error;
+	private Boolean error;
 	private String exception;
 	
 }

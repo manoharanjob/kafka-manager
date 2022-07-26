@@ -2,6 +2,7 @@ package com.marriott.eeh.dto.response;
 
 import java.util.Collection;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.marriott.eeh.model.Node;
 
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClusterResponseDto {
 
 	private String clusterId;
