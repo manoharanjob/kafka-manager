@@ -1,8 +1,6 @@
 package com.marriott.eeh.configuration;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,10 +12,7 @@ import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -27,11 +22,10 @@ import javax.net.ssl.TrustManagerFactory;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.util.ResourceUtils;
+import org.springframework.context.annotation.Primary;
 
 import io.confluent.kafka.schemaregistry.SchemaProvider;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
@@ -42,35 +36,21 @@ import io.confluent.kafka.schemaregistry.json.JsonSchemaProvider;
 import io.confluent.kafka.schemaregistry.protobuf.ProtobufSchemaProvider;
 
 @Configuration
-@PropertySource("classpath:${kafka.file.path}")
 public class KafkaConfiguration {
 
 	private final Logger log = LoggerFactory.getLogger(KafkaConfiguration.class);
 
-	@Value("${kafka.file.path}")
-	private String kafkaFilePath;
-
-	public static Properties kafkaProperties = new Properties();
-
-	@PostConstruct
-	public void initConfig() {
-		Properties properties = new Properties();
-		try (InputStream is = new FileInputStream(ResourceUtils.getFile("classpath:" + kafkaFilePath))) {
-			properties.load(is);
-			kafkaProperties = properties;
-		} catch (Exception e) {
-			log.error("Kafka configuration properties file read excecption:{}", e.getMessage());
-		}
-	}
-
+	@Autowired
+	private KafkaProperties kafkaProps;
+	
 	@Bean
-	public AdminClient adminClient() {
-		return AdminClient.create(getBrokerConfig());
+	public AdminClient devAdminClient() {
+		return AdminClient.create(kafkaProps.getDevBroker());
 	}
 
 	@Bean
 	public SchemaRegistryClient schemaRegistryClient() {
-		Map<String, String> schemaConfig = getSchemaConfig();
+		Map<String, String> schemaConfig = kafkaProps.getDevSchema();
 		String schemaUrl = schemaConfig.remove("schema.registry.url");
 		RestService restService = new RestService(schemaUrl);
 		List<SchemaProvider> providers = Arrays.asList(new AvroSchemaProvider(), new JsonSchemaProvider(),
@@ -82,7 +62,7 @@ public class KafkaConfiguration {
 	public HttpClient connectHttpClient() {
 		SSLContext sslContext = null;
 		try {
-			Map<String, String> connectConfig = getConnectConfig();
+			Map<String, String> connectConfig = kafkaProps.getDevConnect();
 			sslContext = SSLContext.getInstance("TLS");
 			if (connectConfig.containsKey("connect.server.ssl.truststore.location")) {
 				var keyManagers = getKeyManagersFromKeyStore(connectConfig.get("connect.server.ssl.keystore.location"),
@@ -100,29 +80,6 @@ public class KafkaConfiguration {
 			log.error("Connect Http Client creation exception:{}", e.getMessage());
 		}
 		return HttpClient.newBuilder().sslContext(sslContext).build();
-	}
-
-	public static Properties getBrokerConfig() {
-		Properties brokerProperties = new Properties();
-		kafkaProperties.entrySet()
-				.stream()
-				.filter(entry -> !entry.getKey().toString().contains("schema") && !entry.getKey().toString().contains("connect"))
-				.forEach(entry -> brokerProperties.put(entry.getKey().toString(), entry.getValue().toString()));
-		return brokerProperties;
-	}
-	
-	public static Map<String, String> getSchemaConfig() {
-		return kafkaProperties.entrySet()
-				.stream()
-				.filter(entry -> entry.getKey().toString().contains("schema"))
-				.collect(Collectors.toMap(entry -> entry.getKey().toString(), entry -> entry.getValue().toString()));
-	}
-	
-	public static Map<String, String> getConnectConfig() {
-		return kafkaProperties.entrySet()
-				.stream()
-				.filter(entry -> entry.getKey().toString().contains("connect"))
-				.collect(Collectors.toMap(entry -> entry.getKey().toString(), entry -> entry.getValue().toString()));
 	}
 
 	private TrustManager[] getTrustManagersFromTrustStore(String sslPath, String sslPassword)
