@@ -14,3 +14,31 @@ kafka:
   topic:
     internalTopicPrefix: _
 
+  dev:
+    broker:
+      '[bootstrap.servers]': localhost:9092
+      #'[security.protocol]': SSL
+      #'[ssl.truststore.location]': test.jks
+      #'[ssl.truststore.password]': test
+      #'[ssl.keystore.location]': test.jks
+      #'[ssl.keystore.password]': test
+      #'[ssl.key.password]': test
+      #'[ssl.protocol]': TLSv1.2
+      '[request.timeout.ms]': 60000
+      '[security.protocol]': SASL_SSL
+      '[sasl.mechanism]': PLAIN
+      '[sasl.jaas.config]': org.apache.kafka.common.security.plain.PlainLoginModule required username="$ConnectionString" password="";
+    schema:
+      '[schema.registry.url]': http://localhost:8081
+      #'[schema.registry.ssl.truststore.location]': test.jks
+      #'[schema.registry.ssl.truststore.password]': test
+      #'[schema.registry.ssl.keystore.location]': test.jks
+      #'[schema.registry.ssl.keystore.password]': test
+      #'[schema.registry.ssl.key.password]': test
+    connect:
+      '[connect.server.url]': http://localhost:8083
+      #'[connect.server.ssl.truststore.location]': test.jks
+      #'[connect.server.ssl.truststore.password]': test
+      #'[connect.server.ssl.keystore.location]': test.jks
+      #'[connect.server.ssl.keystore.password]': test
+      #'[connect.server.ssl.key.password]': test
