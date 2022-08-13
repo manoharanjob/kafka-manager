@@ -29,10 +29,16 @@ public class AbstractExceptionHandler extends ResponseEntityExceptionHandler {
 	protected MessageHelper messageHelper;
 
 	@Override
+	protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException e,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorResponse("error.request.invalid.request"));
+	}
+
+	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException e,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-				.body(buildErrorResponse("error.request.invalid.body"));
+				.body(buildErrorResponse("error.request.invalid.requestBody"));
 	}
 
 	@Override
@@ -41,11 +47,14 @@ public class AbstractExceptionHandler extends ResponseEntityExceptionHandler {
 		Collection<ErrorInfo> errors = e.getBindingResult()
 										.getFieldErrors()
 										.stream()
-										.map(error -> ErrorInfo.builder()
-												.code(messageHelper.getCode(error.getDefaultMessage()))
-												.title(messageHelper.getTitle(error.getDefaultMessage()))
-												.message(messageHelper.getMessage(error.getDefaultMessage()))
-												.build())
+										.map(error -> {
+											String code = error.getCode();
+											return ErrorInfo.builder()
+													.code(messageHelper.getCode("error.validation.constraints"))
+													.title(messageHelper.getTitle("error.validation.constraints"))
+													.message(messageHelper.getMessage("error.validation.constraints." + code, error.getField()))
+													.build();
+										})
 										.collect(Collectors.toList());
 		if (e.getGlobalErrorCount() > 0) {
 			errors.addAll(e.getBindingResult()
@@ -68,9 +77,9 @@ public class AbstractExceptionHandler extends ResponseEntityExceptionHandler {
 		Collection<ErrorInfo> errors = e.getConstraintViolations()
 										.stream()
 										.map(violation -> ErrorInfo.builder()
-												.code(messageHelper.getCode("error.constrain.violation"))
-												.title(messageHelper.getTitle("error.constrain.violation"))
-												.message(messageHelper.getMessage("error.constrain.violation"))
+												.code(messageHelper.getCode("error.validation.constraints"))
+												.title(messageHelper.getTitle("error.validation.constraints"))
+												.message(messageHelper.getMessage("error.validation.constraints" +violation.getMessage()))
 												.build())
 										.collect(Collectors.toList());
 		return ResponseEntity.status(httpStatus)
