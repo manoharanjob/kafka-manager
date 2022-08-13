@@ -34,7 +34,7 @@ public class KafkaClient {
 
 	private final Logger log = LoggerFactory.getLogger(KafkaClient.class);
 
-	@Autowired
+//	@Autowired
 	private AdminClient adminClient;
 
 	/*-

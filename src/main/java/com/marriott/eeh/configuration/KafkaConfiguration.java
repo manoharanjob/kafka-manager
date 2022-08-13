@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 import io.confluent.kafka.schemaregistry.SchemaProvider;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
@@ -43,12 +42,12 @@ public class KafkaConfiguration {
 	@Autowired
 	private KafkaProperties kafkaProps;
 	
-	@Bean
-	public AdminClient devAdminClient() {
+//	@Bean
+	public AdminClient adminClient() {
 		return AdminClient.create(kafkaProps.getDevBroker());
 	}
 
-	@Bean
+//	@Bean
 	public SchemaRegistryClient schemaRegistryClient() {
 		Map<String, String> schemaConfig = kafkaProps.getDevSchema();
 		String schemaUrl = schemaConfig.remove("schema.registry.url");
@@ -58,7 +57,7 @@ public class KafkaConfiguration {
 		return new CachedSchemaRegistryClient(restService, 10, providers, schemaConfig, null);
 	}
 
-	@Bean
+//	@Bean
 	public HttpClient connectHttpClient() {
 		SSLContext sslContext = null;
 		try {

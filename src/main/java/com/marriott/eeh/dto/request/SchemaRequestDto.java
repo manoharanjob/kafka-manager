@@ -1,5 +1,7 @@
 package com.marriott.eeh.dto.request;
 
+import javax.validation.constraints.NotBlank;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -14,8 +16,11 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SchemaRequestDto {
 
+	@NotBlank
 	private String subject;
+	@NotBlank
 	private String schema;
+	@NotBlank
 	private String schemaType;
 
 }

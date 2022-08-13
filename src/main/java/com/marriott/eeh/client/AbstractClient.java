@@ -17,13 +17,13 @@ public class AbstractClient {
 	
 	private String[] headers = new String[] { "Content-Type", "application/json", "Accept", "application/json" };
 
-	@Autowired
+//	@Autowired
 	private AdminClient devAdminClient;
 
-	@Autowired
+//	@Autowired
 	private AdminClient testAdminClient;
 
-	@Autowired
+//	@Autowired
 	private AdminClient perfAdminClient;
 
 	protected AdminClient getKafkaClient(Env env) {

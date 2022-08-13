@@ -23,7 +23,7 @@ public class SchemaClient {
 
 	private final Logger log = LoggerFactory.getLogger(SchemaClient.class);
 
-	@Autowired
+//	@Autowired
 	private SchemaRegistryClient schemaRegistryClient;
 
 	public Collection<String> getSchemas() throws IOException, RestClientException {

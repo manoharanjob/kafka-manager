@@ -1,5 +1,7 @@
 package com.marriott.eeh.dto.request;
 
+import org.apache.kafka.common.resource.ResourceType;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;

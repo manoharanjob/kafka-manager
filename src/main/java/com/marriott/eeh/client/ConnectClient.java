@@ -14,21 +14,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.marriott.eeh.configuration.KafkaConfiguration;
+import com.marriott.eeh.configuration.KafkaProperties;
 
 @Component
 public class ConnectClient extends AbstractClient {
 
 	private final Logger log = LoggerFactory.getLogger(ConnectClient.class);
 
-	@Autowired
+//	@Autowired
 	private HttpClient connectHttpClient;
 
+	@Autowired
+	KafkaProperties kafkaProps;
+	
 	private static String baseUrl;
 
 	@PostConstruct
 	public void init() {
-		baseUrl = KafkaConfiguration.getConnectConfig().get("connect.server.url");
+		baseUrl = kafkaProps.getDevConnect().get("connect.server.url");
 	}
 
 	public CompletableFuture<HttpResponse<String>> getConnectors() throws IOException, InterruptedException {
