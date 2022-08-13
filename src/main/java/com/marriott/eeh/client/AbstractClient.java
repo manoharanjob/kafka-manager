@@ -3,10 +3,13 @@ package com.marriott.eeh.client;
 import java.net.URI;
 import java.net.http.HttpRequest;
 
+import org.apache.kafka.clients.admin.AdminClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.marriott.eeh.client.handler.RequestBodyHandler;
+import com.marriott.eeh.constant.Env;
 
 public class AbstractClient {
 
@@ -14,6 +17,28 @@ public class AbstractClient {
 	
 	private String[] headers = new String[] { "Content-Type", "application/json", "Accept", "application/json" };
 
+	@Autowired
+	private AdminClient devAdminClient;
+
+	@Autowired
+	private AdminClient testAdminClient;
+
+	@Autowired
+	private AdminClient perfAdminClient;
+
+	protected AdminClient getKafkaClient(Env env) {
+		switch (env) {
+		case dev:
+			return devAdminClient;
+		case test:
+			return testAdminClient;
+		case perf:
+			return perfAdminClient;
+		default:
+			return devAdminClient;
+		}
+	}
+	
 	public String[] getHeaders() {
 		return headers;
 	}
