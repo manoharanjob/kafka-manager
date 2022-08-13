@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.marriott.eeh.exception.TopicExecutionException;
 import com.marriott.eeh.exception.model.ErrorResponse;
@@ -18,6 +19,12 @@ public class KafkaExceptionHandler extends AbstractExceptionHandler {
 
 	private final Logger log = LoggerFactory.getLogger(KafkaExceptionHandler.class);
 
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+			MethodArgumentTypeMismatchException e, WebRequest request) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorResponse("error.request.invalid.request"));
+	}
+	
 	@ExceptionHandler(ConstraintViolationException.class)
 	public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e,
 			WebRequest request) {
