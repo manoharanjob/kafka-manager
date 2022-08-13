@@ -1,14 +1,13 @@
 package com.marriott.eeh.validator;
 
-import com.pwc.bcm.core.validators.constraint.EmailFormat;
-import com.pwc.bcm.core.validators.util.ValidationUtil;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import static com.pwc.bcm.core.validators.constants.ValidationErrorConstants.INVALID_EMAIL_FORMAT;
+import com.marriott.eeh.validator.constraint.NameFormat;
 
-public class EmailFormatValidator implements ConstraintValidator<EmailFormat,String> {
+
+public class NameFormatValidator extends AbstractValidator implements ConstraintValidator<NameFormat,String> {
 
 
     private boolean exists;
@@ -19,7 +18,7 @@ public class EmailFormatValidator implements ConstraintValidator<EmailFormat,Str
      * @param constraintAnnotation the EventId annotation
      */
     @Override
-    public void initialize(EmailFormat constraintAnnotation) {
+    public void initialize(NameFormat constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
@@ -36,7 +35,7 @@ public class EmailFormatValidator implements ConstraintValidator<EmailFormat,Str
                 "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$")){
             return true;
         }
-        ValidationUtil.replaceTemplate(constraintValidatorContext,INVALID_EMAIL_FORMAT);
+//        ValidationUtil.replaceTemplate(constraintValidatorContext,INVALID_EMAIL_FORMAT);
         return false;
     }
 }
