@@ -26,7 +26,7 @@ public class MessageHelper {
 		return messageSourceAccessor.getMessage(String.format("%s.message", code), code);
 	}
 
-	public String getMessage(String code, String... args) {
+	public String getMessage(String code, Object... args) {
 		return messageSourceAccessor.getMessage(String.format("%s.message", code), args, code);
 	}
 }

@@ -2,6 +2,8 @@ package com.marriott.eeh.controller;
 
 import java.util.Collection;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,19 +17,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.marriott.eeh.constant.Env;
 import com.marriott.eeh.dto.request.TopicRequestDto;
 import com.marriott.eeh.dto.response.TopicResponseDto;
 import com.marriott.eeh.service.TopicService;
+import com.marriott.eeh.validator.constraint.EnvType;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@RestController
 @Validated
+@RestController
 public class TopicController {
 
 	private final Logger log = LoggerFactory.getLogger(TopicController.class);
@@ -40,8 +45,8 @@ public class TopicController {
 		@ApiResponse(code = 200, message = "Topics are retrieved successfully"),
 		@ApiResponse(code = 500, message = "Internal server error")
 	})
-	@GetMapping("/topics")
-	public ResponseEntity<Collection<String>> getTopics() {
+	@GetMapping("/{env}/topics")
+	public ResponseEntity<Collection<String>> getTopics(@Valid @EnvType @PathVariable Env env, @Valid @EnvType @RequestParam Env env1) {
 		return ResponseEntity.status(HttpStatus.OK).body(topicService.getTopics());
 	}
 
@@ -101,7 +106,7 @@ public class TopicController {
 	})
 	@PostMapping("/topic")
 	public Collection<TopicResponseDto> createTopic(
-			@ApiParam(name = "topic", type = "TopicRequestDto", value = "topic object", required = true) @RequestBody TopicRequestDto topic) {
+			@ApiParam(name = "topic", type = "TopicRequestDto", value = "topic object", required = true) @Valid @RequestBody TopicRequestDto topic) {
 		return topicService.createTopic(topic);
 	}
 

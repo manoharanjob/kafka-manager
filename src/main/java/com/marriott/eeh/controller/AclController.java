@@ -2,6 +2,8 @@ package com.marriott.eeh.controller;
 
 import java.util.Collection;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +26,8 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@RestController
 @Validated
+@RestController
 public class AclController {
 
 	private final Logger log = LoggerFactory.getLogger(AclController.class);
@@ -63,7 +65,7 @@ public class AclController {
 	})
 	@PostMapping("/acl")
 	public ResponseEntity<Collection<AclResponseDto>> createAcl(
-			@ApiParam(name = "acl", type = "AclRequestDto", value = "acl object", required = true) @RequestBody AclRequestDto acl) {
+			@ApiParam(name = "acl", type = "AclRequestDto", value = "acl object", required = true) @Valid @RequestBody AclRequestDto acl) {
 		return ResponseEntity.status(HttpStatus.OK).body(aclService.createAcl(acl));
 	}
 

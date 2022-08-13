@@ -22,9 +22,10 @@ public class KafkaExceptionHandler extends AbstractExceptionHandler {
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
 			MethodArgumentTypeMismatchException e, WebRequest request) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorResponse("error.request.invalid.request"));
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+				buildErrorResponse("error.request.invalid.request", "ParamType", e.getValue().toString(), e.getName()));
 	}
-	
+
 	@ExceptionHandler(ConstraintViolationException.class)
 	public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e,
 			WebRequest request) {

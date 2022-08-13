@@ -1,8 +1,12 @@
 package com.marriott.eeh.dto.request;
 
-import org.apache.kafka.common.resource.ResourceType;
+import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.marriott.eeh.validator.constraint.AclOperationType;
+import com.marriott.eeh.validator.constraint.AclPatternType;
+import com.marriott.eeh.validator.constraint.AclPermissionType;
+import com.marriott.eeh.validator.constraint.AclResourceType;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,12 +20,18 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AclRequestDto {
 
+	@AclResourceType
 	private String resourceType;
+	@NotBlank
 	private String name;
+	@AclPatternType
 	private String patternType;
+	@NotBlank
 	private String principal;
 	private String host;
-	private String operation;
+	@AclOperationType
+	private String operationType;
+	@AclPermissionType
 	private String permissionType;
 
 }
