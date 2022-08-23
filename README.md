@@ -1,180 +1,137 @@
 # kafka-admin-api
 
-Provides simple REST endpoints for listing and creating Kafka topics.
+Provides REST endpoints for managing kafka platform.
 
 ## About
 
-This is a REST API for Kafka services administration on Trusted Analytics Platform.
+This application provides REST API for Kafka platform services administration.
 
-This application utilizes a Kafka service broker (from TAP) and its client API to manage Kafka resources.
+This application utilize a Kafka admin client API to manage broker.
 
-It performs basic operations, like:
+This application utilize a confluent dependency to manage schema registry.
 
-* list all available topics
-* create a topic
-* read topic messages
+This application utilize a Http client to manage Connect.
 
+It can perform following operations:
 
-## Configuring the application
+### Topic
+* List all available topics
+* Create a topic
+* Update a topic configurations
+* Delete a topic
+* Filter topics based on certain criteria
+* Read messages from topic
+* Write messages to topic
 
-The web service uses application.properties or application-cloud.properties to provide configuration data:
+### Schema
+* List all available schemas
+* Create a schema
+* Update a schema
+* Delete a schema
 
-|key                                          | description                                  |
-|---                                          |---                                           |
-|kafka.brokersUri                             | A list of Kafka brokers                      |
-|kafka.zookeeperUri                           | A list of all zookeeper brokers URI addresses|
+### Acl
+* List all available acls
+* Create a acl
+* Update a acl
+* Delete a acl
 
+### Connector
+* List all available connectors
+* Create a connector
+* Update a connector
+* Delete a connector
 
-To configure logging level the following property can be used:
+## Getting Started
 
-    logging.level.org.trustedanalytics=DEBUG
+### Prerequisites
+There are a few things you need to have installed to run this project.
 
+- [JDK 11+](https://openjdk.java.net/projects/jdk/11/)
+- [Maven](https://maven.apache.org/)
+- [Kafka](https://kafka.apache.org/downloads)
+
+### Download
+
+To run this project locally, first clone it with Git
+
+```shell
+git clone git@github.com:bf2fc6cc711aee1a0c2a/kafka-admin-api.git
+cd kafka-admin-api
+```
+
+### Build
+
+Now you can install the required dependencies with Maven
+
+```shell
+mvn clean install
+```
+
+### Run Kafka
+
+Make sure Kafka running in your local or remote
+
+### Configure
+
+Configure kafka broker, schema registry and connect components details in application.yml
+
+### Run Application
+
+Run Spring Boot Main class to start an application
 
 ## API
 
-After deployment to TAP the Kafka Admin API provides the following endpoints:
-  
-|URL   	                |method  |operation                          |
-|---	                |---     |---	                             |
-|/api/topics   	        |GET     |list the topics   	             |
-|/api/topics   	        |POST    |create a new topic   	             |
-|/api/topics/{name}     |GET     |read topic messages                |
-|/api/topics/{name}     |POST    |write plain text message to a topic|
+After deployment to TAP the Kafka Admin API provides the following endpoints
 
+### Topic
+|URL   	                			|method  	|operation                          		|
+|---	                			|---     	|---	                             		|
+|/kafka/topics   	        		|GET     	|list the available topic names  	        |
+|/kafka/topics/details   	    	|POST    	|list the available topics details 	        |
+|/kafka/topic/{topicName}     		|GET     	|read topic details               			|
+|/kafka/topic						|POST    	|create a topic								|
+|/kafka/topics   					|POST    	|create more than one topic					|
+|/kafka/topic/{topicName}   		|PUT    	|update topic configurations 				|
+|/kafka/topics   					|PUT    	|update more than one topic configurations 	|
+|/kafka/topic/{topicName}   		|DELETE		|delete topic								|
+|/kafka/topics   	    			|DELETE    	|delete more than one topic 	            |
+
+
+### Schema
+|URL   	                			|method  	|operation                          				|
+|---	                			|---     	|---	                             				|
+|/kafka/schemas   	        		|GET     	|list the available schema subjects  	            |
+|/kafka/schemas/details   	    	|POST    	|list the available schema details 	            	|
+|/kafka/schema/{subject}     		|GET     	|read latest verion of schema subject details   	|
+|/kafka/schema/{subject}/versions   |GET     	|read specific version of schema subject details    |
+|/kafka/schema						|POST    	|create a schema									|
+|/kafka/schemas   					|POST    	|create more than one schema						|
+|/kafka/schema/{subject}	   		|DELETE		|delete all versions of specific schema				|
+|/kafka/schema/{subject}/{version}  |DELETE    	|delete specific version of schema 	            	|
+
+### Acl
+|URL   	                			|method  	|operation                          				|
+|---	                			|---     	|---	                             				|
+|/kafka/acls   	        			|GET     	|list the available acls  	             			|
+|/kafka/acls/filter   	    		|POST    	|list the available acls based on filter criteria 	|
+|/kafka/acl							|POST    	|create a acl										|
+|/kafka/acls   						|POST    	|create more than one acl							|
+|/kafka/acl   						|DELETE		|delete acl											|
+|/kafka/acls   	    				|DELETE    	|delete more than one acl 	            			|
+
+### Connect
+|URL   	                			|method  	|operation                          		|
+|---	                			|---     	|---	                             		|
+|/kafka/connectors   	        	|GET     	|list the available connectors  	        |
+|/kafka/connector/{connector}     	|GET     	|read connector details               		|
+|/kafka/connector					|POST    	|create a connector							|
+|/kafka/connector/{connector}   	|DELETE		|delete a connector							|
 
 ## Swagger UI
 
-You can work with the API via the SwaggerUI.
+You can work with the API via the SwaggerUI
 
-Just go to the following example URL and use the Swagger functionality:
+Just go to the following URL and use the Swagger functionality
 
-    http://kafka-admin-api.{domain.com}/swagger-ui.html
+    http://localhost.8085/swagger-ui/index.html
 
-
-## Deploying to Cloud Foundry
-
-### Manual deployment
-To deploy this application to Cloud Foundry you could use the following manifest file (after putting your own configuration data):
-
-    ---
-    applications:
-    - name: kafka-admin-api
-      memory: 512MB
-      instances: 1
-      host: kafka-admin-api
-      path: target/kafka-admin-api-0.1.0.jar
-      services:
-      - kafka-instance
-
-Notes:
-* Executing any *mvn clean* or *mvn package* will delete or override any changes to manifest.yml respectively.
-* Replacing "kafka-instance" service binding to some other service requires updating **application-cloud.properties**: 
-   
-        kafka.brokerUri=${vcap.services.YOUR-KAFKA-INSTANCE.credentials.uri}
-        kafka.zookeeperUri=${vcap.services.YOUR-KAFKA-INSTANCE.credentials.zookeeperUri}
-
-
-### Automated deployment
-
-* Switch to `deploy` directory: `cd deploy`
-* Install tox: `sudo -E pip install --upgrade tox`
-* Run: `tox`
-* Activate virtualenv with installed dependencies: `. .tox/py27/bin/activate`
-* Run deployment script: `python deploy.py` providing required parameters when running script (`python deploy.py -h` to check script parameters with their descriptions).
-
-
-## Local development
-
-For local development Zookeeper and Kafka must be installed.
-
-### Zookeeper
-
-Zookeeper can be downloaded from Apache ZooKeeper Releases
-
-I assume you are working on Linux machine and will be using kafka-admin-api directory as a workspace.
-
-Simple installation could look like this:
-
-    cd ~/kafka-admin-api
-    mkdir zookeeper
-    cd zookeeper
-    wget http://apache.mirrors.lucidnetworks.net/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz
-    tar -xvf zookeeper-3.4.6.tar.gz
-    cd zookeeper-3.4.6/
-
-To test the installation:
-
-    cp conf/zoo_sample.cfg conf/zoo.cfg
-    bin/zkServer.sh start
-
-You should see something similar to:
-
-    JMX enabled by default
-    Using config: /home/ubuntu/zookeeper-3.4.6/bin/../conf/zoo.cfg
-    Starting zookeeper ... STARTED
-
-### Kafka
-
-Kafka downloads ara available here: http://kafka.apache.org/downloads.html. The current stable version is 0.10.0.0.
-
-I pick version kafka_2.11-0.10.0.0.tgz from the following mirror: http://mirrors.sonic.net/apache/kafka/0.10.0.0/kafka_2.11-0.10.0.0.tgz
-
-    cd ~/kafka-admin-api
-    mkdir kafka
-    cd kafka
-    wget http://mirrors.sonic.net/apache/kafka/0.10.0.0/kafka_2.11-0.10.0.0.tgz
-    tar xvzf kafka_2.11-0.10.0.0.tgz  
-
-To test if it works, start the server:
-
-    cd kafka_2.11-0.10.0.0
-    bin/kafka-server-start.sh config/server.properties
-
-
-### Building and running
-
-To run this API locally you can execute the following commands:
-
-    mvn clean package
-    mvn spring-boot:run
-
-
-### Testing
-
-For testing you can use SwaggerUI or curl.
- 
-* Swagger UI is available here:
-
-    http://kafka-admin-api.{domain.com}/api/topics
-
-    
-* To list topics invoke below curl:
-
-    curl http://kafka-admin-api.{domain.com}/api/topics
-
-
-* To create a topic invoke below curl:
-
-    curl -H "Content-Type: application/json" -X POST -d '{"topic":"test_topic_1"}' http://kafka-admin-api.{domain.com}/api/topics
-    Note: The default partitions number in this case is 2.
-
-* To create a topic with an explicit partitions number use this:
-
-    curl -H "Content-Type: application/json" -X POST -d '{"topic":"test_topic_1","partitions":2}' http://kafka-admin-api.{domain.com}/api/topics
-
-* To read topic messages use this:
-
-    curl http://kafka-admin-api.{domain.com}/api/topics/{__TOPIC_NAME__}
-
-    Here you have to provide the domain and TOPIC_NAME.
-
-* To write a message to a topic use this:
-
-    curl -H "Content-Type: text/plain" -X POST -d 'my test message' http://kafka-admin-api.{domain.com}/api/topics
-
-
-## Future improvements
-
-* new operation: delete topic 
-* performance improvement: Zookeeper connection handling
-* exception handling: zookeeper connection lost during service startup
